@@ -47,9 +47,9 @@
 
   /* ---------- Controls ---------- */
   #controls { position:fixed; inset:0; z-index:20; pointer-events:none; }
-  #joyZone { position:absolute; left:0; bottom:0; width:50%; height:55%; pointer-events:auto; }
-  #joyBase { position:absolute; width:130px; height:130px; border-radius:50%; background:rgba(255,255,255,.12); border:3px solid rgba(255,255,255,.4); display:none; transform:translate(-50%,-50%); }
-  #joyKnob { position:absolute; width:62px; height:62px; border-radius:50%; background:radial-gradient(circle at 35% 30%,#fff,#aac); border:3px solid rgba(255,255,255,.7); transform:translate(-50%,-50%); box-shadow:0 4px 10px rgba(0,0,0,.4); }
+  #joyZone { position:absolute; left:0; bottom:0; width:50%; height:62%; pointer-events:auto; }
+  #joyBase { position:absolute; left:calc(28px + env(safe-area-inset-left,0px)); bottom:calc(34px + env(safe-area-inset-bottom,0px)); width:130px; height:130px; border-radius:50%; background:rgba(255,255,255,.14); border:3px solid rgba(255,255,255,.5); display:block; box-shadow:0 4px 12px rgba(0,0,0,.25); }
+  #joyKnob { position:absolute; left:65px; top:65px; width:64px; height:64px; border-radius:50%; background:radial-gradient(circle at 35% 30%,#fff,#aac); border:3px solid rgba(255,255,255,.8); transform:translate(-50%,-50%); box-shadow:0 4px 10px rgba(0,0,0,.4); }
 
   .actbtn { position:absolute; pointer-events:auto; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; color:#fff; text-align:center; box-shadow:0 6px 0 rgba(0,0,0,.3); border:4px solid rgba(255,255,255,.55); transition:transform .06s; line-height:1; }
   .actbtn:active { transform:translateY(4px); box-shadow:0 2px 0 rgba(0,0,0,.3); }
@@ -353,18 +353,21 @@ function spawnParticipants(n){
 const input = { dx:0, dy:0, mag:0, sprint:false };
 const joyBase=document.getElementById('joyBase'), joyKnob=document.getElementById('joyKnob');
 const joyZone=document.getElementById('joyZone');
-let joyId=null, joyOX=0, joyOY=0;
-
-function joyStart(id,x,y){ joyId=id; joyOX=x; joyOY=y; joyBase.style.display='block'; joyBase.style.left=x+'px'; joyBase.style.top=y+'px'; joyKnob.style.left='50%'; joyKnob.style.top='50%'; }
+// Joystick FIXO (sempre visível no canto inferior esquerdo). O knob se move
+// em relação ao centro fixo da base, então nunca sai da tela.
+let joyId=null, joyCX=0, joyCY=0;
+const JOY_MAX=50, JOY_HALF=65; // raio máximo do knob / metade da base (130px)
+function joyRecenter(){ const r=joyBase.getBoundingClientRect(); joyCX=r.left+r.width/2; joyCY=r.top+r.height/2; }
+function joyStart(id,x,y){ joyId=id; joyRecenter(); joyMove(x,y); }
 function joyMove(x,y){
-  let dx=x-joyOX, dy=y-joyOY; const max=58; const d=Math.hypot(dx,dy);
-  if(d>max){ dx=dx/d*max; dy=dy/d*max; }
-  joyKnob.style.left=(50+dx/max*50*0.9)+'%';
-  joyKnob.style.top=(50+dy/max*50*0.9)+'%';
-  const mag=Math.min(1,d/max);
-  input.mag=mag; if(d>0){ input.dx=dx/Math.max(d,1); input.dy=dy/Math.max(d,1); }
+  let dx=x-joyCX, dy=y-joyCY; const d=Math.hypot(dx,dy);
+  if(d>JOY_MAX){ dx=dx/d*JOY_MAX; dy=dy/d*JOY_MAX; }
+  joyKnob.style.left=(JOY_HALF+dx)+'px';
+  joyKnob.style.top=(JOY_HALF+dy)+'px';
+  input.mag=Math.min(1,d/JOY_MAX);
+  if(d>0){ input.dx=dx/d; input.dy=dy/d; } else { input.dx=0; input.dy=0; }
 }
-function joyEnd(){ joyId=null; joyBase.style.display='none'; input.dx=0; input.dy=0; input.mag=0; }
+function joyEnd(){ joyId=null; joyKnob.style.left=JOY_HALF+'px'; joyKnob.style.top=JOY_HALF+'px'; input.dx=0; input.dy=0; input.mag=0; }
 
 joyZone.addEventListener('touchstart',e=>{ e.preventDefault(); const t=e.changedTouches[0]; joyStart(t.identifier,t.clientX,t.clientY); Audio.init(); },{passive:false});
 joyZone.addEventListener('touchmove',e=>{ e.preventDefault(); for(const t of e.changedTouches){ if(t.identifier===joyId) joyMove(t.clientX,t.clientY); } },{passive:false});
