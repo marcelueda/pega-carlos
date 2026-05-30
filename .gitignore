@@ -1,0 +1,7 @@
+# Imagens originais (não usadas pelo jogo — só os *_face.png vão pro ar)
+carlos.png
+emerson.jpeg
+
+# Arquivos temporários / config local
+_*.png
+.claude/
