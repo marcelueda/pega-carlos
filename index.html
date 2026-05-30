@@ -26,11 +26,11 @@
   @keyframes pulse { from{transform:scale(1)} to{transform:scale(1.18)} }
 
   /* combo */
-  #combo { position:fixed; top:78px; left:50%; transform:translateX(-50%) scale(0); font-size:42px; font-weight:900; color:#ff7b00; text-shadow:3px 3px 0 #000,-1px -1px 0 #fff; z-index:11; pointer-events:none; transition:transform .15s; white-space:nowrap; }
+  #combo { position:fixed; top:96px; left:50%; transform:translateX(-50%) scale(0); font-size:38px; font-weight:900; color:#ff7b00; text-shadow:3px 3px 0 #000,-1px -1px 0 #fff; z-index:11; pointer-events:none; transition:transform .15s; white-space:nowrap; }
   #combo.show { transform:translateX(-50%) scale(1); }
 
   /* big scream text */
-  #scream { position:fixed; top:34%; left:50%; transform:translate(-50%,-50%) rotate(-4deg) scale(0); width:92%; text-align:center; font-size:34px; line-height:1.1; font-weight:900; color:#fff200; text-shadow:4px 4px 0 #b30000, -2px -2px 0 #000, 0 0 18px #ff0; z-index:30; pointer-events:none; }
+  #scream { position:fixed; top:28%; left:50%; transform:translate(-50%,-50%) rotate(-4deg) scale(0); width:92%; text-align:center; font-size:32px; line-height:1.1; font-weight:900; color:#fff200; text-shadow:4px 4px 0 #b30000, -2px -2px 0 #000, 0 0 18px #ff0; z-index:30; pointer-events:none; }
   #scream.show { animation:screamPop 2.6s ease forwards; }
   @keyframes screamPop {
     0%{transform:translate(-50%,-50%) rotate(-4deg) scale(0);}
@@ -42,7 +42,7 @@
   }
 
   /* narration toast */
-  #narration { position:fixed; bottom:140px; left:50%; transform:translateX(-50%) translateY(20px); opacity:0; background:rgba(0,0,0,.6); color:#fff; padding:8px 18px; border-radius:20px; font-size:16px; font-weight:bold; z-index:12; pointer-events:none; max-width:90%; text-align:center; transition:opacity .3s, transform .3s; border:2px solid #ffd83d; }
+  #narration { position:fixed; top:150px; left:50%; transform:translateX(-50%) translateY(-20px); opacity:0; background:rgba(0,0,0,.6); color:#fff; padding:8px 18px; border-radius:20px; font-size:16px; font-weight:bold; z-index:12; pointer-events:none; max-width:86%; text-align:center; transition:opacity .3s, transform .3s; border:2px solid #ffd83d; }
   #narration.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
   /* ---------- Controls ---------- */
@@ -201,8 +201,8 @@ const COSTUMES = {
 
 // ---------- Real face photos (mapped onto heads) ----------
 const FACE = { carlos:new Image(), emerson:new Image(), ok:{carlos:false,emerson:false} };
-FACE.carlos.onload=()=>FACE.ok.carlos=true; FACE.carlos.src='carlos_face.png';
-FACE.emerson.onload=()=>FACE.ok.emerson=true; FACE.emerson.src='emerson_face.png';
+FACE.carlos.onload=()=>FACE.ok.carlos=true; FACE.carlos.onerror=()=>console.warn('Falha ao carregar carlos_face.png'); FACE.carlos.src='carlos_face.png?v=3';
+FACE.emerson.onload=()=>FACE.ok.emerson=true; FACE.emerson.onerror=()=>console.warn('Falha ao carregar emerson_face.png'); FACE.emerson.src='emerson_face.png?v=3';
 // Draw a circular photo head with a neck stub. Adds rim outline.
 function drawFace(img,cx,cy,hr,neckColor){
   ctx.fillStyle=neckColor; roundRect(cx-hr*0.32,cy+hr*0.45,hr*0.64,hr*0.8,hr*0.15); ctx.fill();
